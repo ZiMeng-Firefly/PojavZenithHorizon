@@ -71,6 +71,7 @@ public class LauncherPreferences {
     public static boolean PREF_SKIP_NOTIFICATION_PERMISSION_CHECK = false;
     public static boolean PREF_VSYNC_IN_ZINK = false;
     public static boolean PREF_AUTOMATICALLY_SET_GAME_LANGUAGE = true;
+    public static boolean PREF_GAME_LANGUAGE_OVERRIDDEN = false;
     public static String PREF_GAME_LANGUAGE = ZHTools.getSystemLanguage();
     public static String PREF_LAUNCHER_THEME = "system";
     public static boolean PREF_ENABLE_LOG_OUTPUT = false;
@@ -124,7 +125,8 @@ public class LauncherPreferences {
         PREF_VERIFY_MANIFEST = DEFAULT_PREF.getBoolean("verifyManifest", true);
         PREF_SKIP_NOTIFICATION_PERMISSION_CHECK = DEFAULT_PREF.getBoolean(PREF_KEY_SKIP_NOTIFICATION_CHECK, false);
         PREF_VSYNC_IN_ZINK = DEFAULT_PREF.getBoolean("vsync_in_zink", false);
-        PREF_AUTOMATICALLY_SET_GAME_LANGUAGE = DEFAULT_PREF.getBoolean("setToChinese", true);
+        PREF_AUTOMATICALLY_SET_GAME_LANGUAGE = DEFAULT_PREF.getBoolean("autoSetGameLanguage", true);
+        PREF_GAME_LANGUAGE_OVERRIDDEN = DEFAULT_PREF.getBoolean("gameLanguageOverridden", false);
         PREF_GAME_LANGUAGE = DEFAULT_PREF.getString("setGameLanguage", ZHTools.getSystemLanguage());
         PREF_LAUNCHER_THEME = DEFAULT_PREF.getString("launcherTheme", "system");
         PREF_ENABLE_LOG_OUTPUT = DEFAULT_PREF.getBoolean("enableLogOutput", false);
@@ -156,7 +158,7 @@ public class LauncherPreferences {
             PREF_DEFAULT_RUNTIME = DEFAULT_PREF.getString("defaultRuntime", "");
         } else if (!MultiRTUtils.getRuntimes().isEmpty()) {
             //设置默认运行环境
-            PREF_DEFAULT_RUNTIME = UnpackJRE.InternalRuntime.JRE_8.name;
+            PREF_DEFAULT_RUNTIME = UnpackJRE.InternalRuntime.JRE_8.getJreName();
             LauncherPreferences.DEFAULT_PREF.edit().putString("defaultRuntime", PREF_DEFAULT_RUNTIME).apply();
         }
     }
