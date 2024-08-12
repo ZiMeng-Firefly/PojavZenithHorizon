@@ -28,7 +28,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.DocumentsContract;
-import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +48,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.kdt.LoggerView;
 import com.movtery.pojavzh.feature.ProfileLanguageSelector;
 import com.movtery.pojavzh.feature.accounts.AccountsManager;
+import com.movtery.pojavzh.feature.log.Logging;
 import com.movtery.pojavzh.ui.dialog.ControlSettingsDialog;
 import com.movtery.pojavzh.ui.dialog.KeyboardDialog;
 import com.movtery.pojavzh.ui.dialog.MouseSettingsDialog;
@@ -56,6 +56,7 @@ import com.movtery.pojavzh.ui.dialog.SelectControlsDialog;
 import com.movtery.pojavzh.ui.dialog.TipDialog;
 import com.movtery.pojavzh.ui.subassembly.background.BackgroundType;
 import com.movtery.pojavzh.feature.customprofilepath.ProfilePathManager;
+import com.movtery.pojavzh.utils.PathAndUrlManager;
 import com.movtery.pojavzh.utils.anim.AnimUtils;
 import com.movtery.pojavzh.utils.ZHTools;
 import com.movtery.pojavzh.utils.stringutils.StringUtils;
@@ -176,7 +177,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         try {
-            File latestLogFile = new File(Tools.DIR_GAME_HOME, "latestlog.txt");
+            File latestLogFile = new File(PathAndUrlManager.DIR_GAME_HOME, "latestlog.txt");
             if(!latestLogFile.exists() && !latestLogFile.createNewFile())
                 throw new IOException("Failed to create a new log file");
             Logger.begin(latestLogFile.getAbsolutePath());
@@ -185,7 +186,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             touchCharInput.setCharacterSender(new LwjglCharSender());
 
             if(minecraftProfile.pojavRendererName != null) {
-                Log.i("RdrDebug","__P_renderer="+minecraftProfile.pojavRendererName);
+                Logging.i("RdrDebug","__P_renderer="+minecraftProfile.pojavRendererName);
                 Tools.LOCAL_RENDERER = minecraftProfile.pojavRendererName;
             }
 
@@ -269,10 +270,10 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             mControlLayout.loadLayout(
                     minecraftProfile.controlFile == null
                             ? LauncherPreferences.PREF_DEFAULTCTRL_PATH
-                            : Tools.CTRLMAP_PATH + "/" + minecraftProfile.controlFile);
+                            : PathAndUrlManager.DIR_CTRLMAP_PATH + "/" + minecraftProfile.controlFile);
         } catch(IOException e) {
             try {
-                Log.w("MainActivity", "Unable to load the control file, loading the default now", e);
+                Logging.w("MainActivity", "Unable to load the control file, loading the default now", e);
                 mControlLayout.loadLayout((String) null);
             } catch (IOException ioException) {
                 Tools.showError(this, ioException);
@@ -368,7 +369,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             try {
                 mControlLayout.loadLayout(LauncherPreferences.PREF_DEFAULTCTRL_PATH);
             } catch (IOException e) {
-                e.printStackTrace();
+                Logging.e("LoadLayout", Tools.printToString(e));
             }
         }
     }
@@ -384,7 +385,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         if(!Tools.checkRendererCompatible(this, Tools.LOCAL_RENDERER)) {
             Tools.RenderersList renderersList = Tools.getCompatibleRenderers(this);
             String firstCompatibleRenderer = renderersList.rendererIds.get(0);
-            Log.w("runCraft","Incompatible renderer "+Tools.LOCAL_RENDERER+ " will be replaced with "+firstCompatibleRenderer);
+            Logging.w("runCraft","Incompatible renderer "+Tools.LOCAL_RENDERER+ " will be replaced with "+firstCompatibleRenderer);
             Tools.LOCAL_RENDERER = firstCompatibleRenderer;
             Tools.releaseCache();
         }
@@ -401,7 +402,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     }
 
     private void printLauncherInfo(String gameVersion, String javaArguments, String javaRuntime) {
-        Logger.appendToLog("Info: Launcher version: " + getVersionName(this) + " (" + getVersionCode(this) + ")");
+        Logger.appendToLog("Info: Launcher version: " + getVersionName() + " (" + getVersionCode() + ")");
         Logger.appendToLog("Info: Architecture: " + Architecture.archAsString(Tools.DEVICE_ARCHITECTURE));
         Logger.appendToLog("Info: Device model: " + StringUtils.insertSpace(Build.MANUFACTURER, Build.MODEL));
         Logger.appendToLog("Info: API version: " + Build.VERSION.SDK_INT);
@@ -458,7 +459,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
                     try {
                         fullyExit();
                     } catch (Throwable th) {
-                        Log.w(Tools.APP_NAME, "Could not enable System.exit() method!", th);
+                        Logging.w(Tools.APP_NAME, "Could not enable System.exit() method!", th);
                     }
                 }).buildDialog();
     }
@@ -541,7 +542,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             int truncLength = 5;
             if(input.startsWith("file://")) truncLength = 7;
             input = input.substring(truncLength);
-            Log.i("MainActivity", input);
+            Logging.i("MainActivity", input);
             boolean isDirectory = new File(input).isDirectory();
             if(isDirectory) {
                 intent.setType(DocumentsContract.Document.MIME_TYPE_DIR);
@@ -634,7 +635,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             MainActivity.mControlLayout.loadLayout(
                     minecraftProfile.controlFile == null
                             ? LauncherPreferences.PREF_DEFAULTCTRL_PATH
-                            : Tools.CTRLMAP_PATH + "/" + minecraftProfile.controlFile);
+                            : PathAndUrlManager.DIR_CTRLMAP_PATH + "/" + minecraftProfile.controlFile);
             mDrawerPullButton.setVisibility(mControlLayout.hasMenuButton() ? View.GONE : View.VISIBLE);
         } catch (IOException e) {
             Tools.showError(this,e);

@@ -17,7 +17,9 @@ import androidx.core.app.*;
 
 import android.util.*;
 
+import com.movtery.pojavzh.feature.log.Logging;
 import com.movtery.pojavzh.ui.activity.ErrorActivity;
+import com.movtery.pojavzh.utils.PathAndUrlManager;
 
 import java.io.*;
 import java.text.*;
@@ -40,8 +42,8 @@ public class PojavApplication extends Application {
 	public void onCreate() {
 		ContextExecutor.setApplication(this);
 		Thread.setDefaultUncaughtExceptionHandler((thread, th) -> {
-			boolean storagePermAllowed = (Build.VERSION.SDK_INT >= 29 || ActivityCompat.checkSelfPermission(PojavApplication.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && Tools.checkStorageRoot(PojavApplication.this);
-			File crashFile = new File(storagePermAllowed ? Tools.DIR_GAME_HOME : Tools.DIR_DATA, "latestcrash.txt");
+			boolean storagePermAllowed = (Build.VERSION.SDK_INT >= 29 || ActivityCompat.checkSelfPermission(PojavApplication.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && Tools.checkStorageRoot();
+			File crashFile = new File(storagePermAllowed ? PathAndUrlManager.DIR_LAUNCHER_LOG : PathAndUrlManager.DIR_DATA, "latestcrash.txt");
 			try {
 				// Write to file, since some devices may not able to show error
 				FileUtils.ensureParentDirectory(crashFile);
@@ -51,12 +53,12 @@ public class PojavApplication extends Application {
 				crashStream.append(" - Device: ").append(Build.PRODUCT).append(" ").append(Build.MODEL).append("\n");
 				crashStream.append(" - Android version: ").append(Build.VERSION.RELEASE).append("\n");
 				crashStream.append(" - Crash stack trace:\n");
-				crashStream.append(" - Launcher version: ").append(getVersionName(this)).append("\n");
+				crashStream.append(" - Launcher version: ").append(getVersionName()).append("\n");
 				crashStream.append(Log.getStackTraceString(th));
 				crashStream.close();
 			} catch (Throwable throwable) {
-				Log.e(CRASH_REPORT_TAG, " - Exception attempt saving crash stack trace:", throwable);
-				Log.e(CRASH_REPORT_TAG, " - The crash stack trace was:", th);
+				Logging.e(CRASH_REPORT_TAG, " - Exception attempt saving crash stack trace:", throwable);
+				Logging.e(CRASH_REPORT_TAG, " - The crash stack trace was:", th);
 			}
 
 			ErrorActivity.showError(PojavApplication.this, crashFile.getAbsolutePath(), th);
@@ -66,9 +68,9 @@ public class PojavApplication extends Application {
 		try {
 			super.onCreate();
 			
-			Tools.DIR_DATA = getDir("files", MODE_PRIVATE).getParent();
-			Tools.DIR_CACHE = getCacheDir();
-			Tools.DIR_ACCOUNT_NEW = Tools.DIR_DATA + "/accounts";
+			PathAndUrlManager.DIR_DATA = getDir("files", MODE_PRIVATE).getParent();
+			PathAndUrlManager.DIR_CACHE = getCacheDir();
+			Tools.DIR_ACCOUNT_NEW = PathAndUrlManager.DIR_DATA + "/accounts";
 			Tools.DEVICE_ARCHITECTURE = Architecture.getDeviceArchitecture();
 			//Force x86 lib directory for Asus x86 based zenfones
 			if(Architecture.isx86Device() && Architecture.is32BitsDevice()){

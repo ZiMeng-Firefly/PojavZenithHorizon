@@ -79,7 +79,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 34
         versionCode getVersionCode()
-        versionName "1.2.6"
+        versionName "1.2.7"
         multiDexEnabled true //important
         resValue 'string', 'curseforge_api_key', getCFApiKey()
         resValue 'string', 'zh_branch_info', getBranchName()
@@ -96,7 +96,6 @@ android {
             signingConfig signingConfigs.customDebug
             resValue 'string', 'application_package', 'net.kdt.pojavlaunch.zh.debug'
             resValue 'string', 'storageProviderAuthorities', 'net.kdt.pojavlaunch.scoped.gamefolder.zh.debug'
-            resValue 'string', 'zh_version_status', 'debug'
         }
         proguard {
             initWith debug
@@ -113,7 +112,6 @@ android {
             // debuggable = true
             resValue 'string', 'application_package', 'net.kdt.pojavlaunch.zh'
             resValue 'string', 'storageProviderAuthorities', 'net.kdt.pojavlaunch.scoped.gamefolder.zh'
-            resValue 'string', 'zh_version_status', 'release'
             signingConfig signingConfigs.releaseBuild
         }
     }
@@ -191,7 +189,7 @@ dependencies {
     // Our version of exp4j can be built from source at
     // https://github.com/PojavLauncherTeam/exp4j
     implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.6.1'
-    implementation 'com.bytedance:bytehook:1.0.9'
+    implementation 'com.bytedance:bytehook:1.0.10'
 
     // implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:1.7.0'
 
