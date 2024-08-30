@@ -79,7 +79,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 34
         versionCode getVersionCode()
-        versionName "1.2.8"
+        versionName "1.2.9"
         multiDexEnabled true //important
         resValue 'string', 'curseforge_api_key', getCFApiKey()
         resValue 'string', 'zh_branch_info', getBranchName()
@@ -113,6 +113,54 @@ android {
             resValue 'string', 'application_package', 'net.kdt.pojavlaunch.zh'
             resValue 'string', 'storageProviderAuthorities', 'net.kdt.pojavlaunch.scoped.gamefolder.zh'
             signingConfig signingConfigs.releaseBuild
+        }
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
+            def abi = output.getFilter(ABI) ?: "all"
+
+            variant.mergeAssetsProvider.get().doLast {
+                def arch = System.getProperty("arch", "all")
+                def assetsDir = mergeAssetsProvider.get().outputDir.get()
+                def javaVersions = ['jre-8', 'jre-17', 'jre-21']
+
+                javaVersions.each { javaVersion ->
+                    def runtimeDir = new File([assetsDir, "components/${javaVersion}"].join(File.separator))
+                    fileTree(dir: runtimeDir, include: ['*.tar.xz']).each { file ->
+                        if (arch != 'all' && !file.name.contains(arch) && !file.name.contains("universal")) {
+                            println("delete:${file} : ${delete(file)}")
+                        }
+                    }
+                }
+            }
+
+            def baseName = "PojavZenithHorizon-${variant.buildType.name == 'release' ? variant.versionName : "Debug-${variant.versionName}"}"
+            outputFileName = abi == "all" ? "${baseName}.apk" : "${baseName}-${abi}.apk"
+        }
+    }
+
+    splits {
+        def arch = System.getProperty("arch", "all")
+        if (arch != 'all') {
+            abi {
+                enable true
+                reset()
+                switch (arch) {
+                    case 'arm':
+                        include 'armeabi-v7a'
+                        break
+                    case 'arm64':
+                        include 'arm64-v8a'
+                        break
+                    case 'x86':
+                        include 'x86'
+                        break
+                    case 'x86_64':
+                        include 'x86_64'
+                        break
+                }
+            }
         }
     }
 
@@ -150,18 +198,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
-    applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach { output ->
-            def newName
-            if (variant.buildType.name == 'release') {
-                newName = "PojavZenithHorizon-${variant.versionName}.apk"
-            } else {
-                newName = "PojavZenithHorizon-Debug-${variant.versionName}.apk"
-            }
-            outputFileName = newName
-        }
-    }
 }
 
 dependencies {
@@ -181,6 +217,7 @@ dependencies {
     implementation 'com.github.Mathias-Boulay:ExtendedView:1.0.0'
     implementation 'com.github.Mathias-Boulay:android_gamepad_remapper:06184ddbce'
     implementation 'com.github.Mathias-Boulay:virtual-joystick-android:2e7aa25e50'
+    implementation "com.github.skydoves:powerspinner:1.2.7"
 
     // implementation 'com.intuit.sdp:sdp-android:1.0.5'
     // implementation 'com.intuit.ssp:ssp-android:1.0.5'
@@ -200,4 +237,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
 
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
+    implementation('org.apache.commons:commons-text:1.12.0') {
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+    }
 }
