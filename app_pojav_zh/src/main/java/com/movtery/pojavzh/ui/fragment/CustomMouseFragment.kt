@@ -1,6 +1,7 @@
 package com.movtery.pojavzh.ui.fragment
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -23,6 +24,8 @@ import com.movtery.pojavzh.utils.anim.ViewAnimUtils.Companion.setViewAnim
 import com.movtery.pojavzh.utils.anim.ViewAnimUtils.Companion.slideInAnim
 import com.movtery.pojavzh.utils.file.FileTools.Companion.copyFileInBackground
 import com.movtery.pojavzh.utils.file.FileTools.Companion.mkdirs
+import com.movtery.pojavzh.utils.image.ImageCallback
+import com.movtery.pojavzh.utils.image.ImageUtils
 import com.movtery.pojavzh.utils.image.ImageUtils.Companion.isImage
 import com.movtery.pojavzh.utils.stringutils.StringUtils
 import net.kdt.pojavlaunch.PojavApplication
@@ -50,12 +53,12 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
         super.onCreate(savedInstanceState)
         openDocumentLauncher = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { result: Uri? ->
             result?.let{
-                Toast.makeText(requireContext(), getString(R.string.tasks_ongoing), Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), getString(R.string.tasks_ongoing), Toast.LENGTH_SHORT).show()
 
                 PojavApplication.sExecutorService.execute {
-                    copyFileInBackground(requireContext(), result, mousePath().absolutePath)
+                    copyFileInBackground(requireActivity(), result, mousePath().absolutePath)
                     Tools.runOnUiThread {
-                        Toast.makeText(requireContext(), getString(R.string.zh_file_added), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity(), getString(R.string.zh_file_added), Toast.LENGTH_SHORT).show()
                         loadData()
                     }
                 }
@@ -75,12 +78,17 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
         slideInAnim(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        slideInAnim(this)
+    }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun loadData() {
-        val fileItemBeans = FileRecyclerViewCreator.loadItemBeansFromPath(requireContext(),
+        val fileItemBeans = FileRecyclerViewCreator.loadItemBeansFromPath(requireActivity(),
             mousePath(), FileIcon.IMAGE, true, false)
         fileItemBeans.add(
-            0, FileItemBean(requireContext().getDrawable(R.drawable.ic_mouse_pointer), null, getString(R.string.zh_custom_mouse_default)))
+            0, FileItemBean(requireActivity().getDrawable(R.drawable.ic_mouse_pointer), null, getString(R.string.zh_custom_mouse_default)))
         Tools.runOnUiThread {
             fileRecyclerViewCreator?.loadData(fileItemBeans)
             //默认显示当前选中的鼠标
@@ -95,10 +103,21 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
     }
 
     private fun refreshIcon() {
-        PojavApplication.sExecutorService.execute {
-            Tools.runOnUiThread {
-                mMouseView?.setImageDrawable(ZHTools.customMouse(requireContext()))
+        mMouseView?.apply {
+            ZHTools.getCustomMouse()?.let { file ->
+                ImageUtils.loadDrawableFromImageFit(requireContext(), file,
+                    object : ImageCallback {
+                        override fun onImageLoaded(drawable: Drawable?) {
+                            setImageDrawable(drawable)
+                        }
+
+                        override fun onImageFailed(errorDrawable: Drawable?) {
+                            setImageDrawable(errorDrawable)
+                        }
+                    }, width, height)
+                return@apply
             }
+            setImageDrawable(ZHTools.customMouse(context))
         }
     }
 
@@ -122,7 +141,7 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
         ZHTools.setTooltipText(mRefreshButton, mRefreshButton?.contentDescription)
 
         val mMouseListView = view.findViewById<RecyclerView>(R.id.zh_custom_mouse)
-        fileRecyclerViewCreator = FileRecyclerViewCreator(requireContext(), mMouseListView, { position: Int, fileItemBean: FileItemBean ->
+        fileRecyclerViewCreator = FileRecyclerViewCreator(requireActivity(), mMouseListView, { position: Int, fileItemBean: FileItemBean ->
                 val file = fileItemBean.file
                 val fileName = file?.name
                 val isDefaultMouse = position == 0
@@ -140,11 +159,11 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
                 filesButton.setMessageText(message)
                 filesButton.setMoreButtonText(getString(R.string.global_select))
 
-                val filesDialog = FilesDialog(requireContext(), filesButton, { this.loadData() }, mousePath(), file)
+                val filesDialog = FilesDialog(requireActivity(), filesButton, { this.loadData() }, mousePath(), file)
                 filesDialog.setMoreButtonClick {
                     LauncherPreferences.DEFAULT_PREF.edit().putString("custom_mouse", fileName).apply()
                     refreshIcon()
-                    Toast.makeText(requireContext(),
+                    Toast.makeText(requireActivity(),
                         StringUtils.insertSpace(getString(R.string.zh_custom_mouse_added), (fileName ?: getString(R.string.zh_custom_mouse_default))),
                         Toast.LENGTH_SHORT).show()
                     filesDialog.dismiss()

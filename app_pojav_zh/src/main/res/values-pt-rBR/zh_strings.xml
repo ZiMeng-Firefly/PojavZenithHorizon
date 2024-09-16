@@ -48,6 +48,8 @@
     <string name="zh_profile_mods_modloader">Carregador de Mods</string>
     <string name="zh_profile_mods_download_mod_failed">Falha ao baixar o arquivo Mod</string>
     <string name="zh_profile_mods_download_mod_release_version">Mostrar apenas versões oficiais do Minecraft</string>
+    <string name="zh_profile_mods_download_mod_custom_name">Nome Personalizado</string>
+    <string name="zh_profile_mods_download_mod_custom_name_invalid">O nome contém caracteres inválidos: \"%s\"</string>
     <string name="zh_profile_mods_search_mod_failed">Falha ao pesquisar Mod</string>
     <string name="zh_profile_mods_search_mod_no_result">Nenhum Mod relevante encontrado</string>
     <string name="zh_profile_mods_search_mod">Pesquisar Mod</string>
@@ -98,9 +100,7 @@
     <string name="zh_account_local_account">Conta Offline</string>
     <string name="zh_account_local_account_empty">O nome de usuário não pode estar vazio!</string>
     <string name="zh_account_local_account_exists">O nome de usuário está em conflito com uma conta existente, por favor, insira um novo nome!</string>
-    <string name="zh_account_local_account_less">Nome de usuário muito curto!</string>
-    <string name="zh_account_local_account_greater">Nome de usuário muito longo!</string>
-    <string name="zh_account_local_account_illegal">O nome de usuário contém caracteres ilegais! Apenas letras (maiúsculas e minúsculas), números e sublinhados são suportados como nome de usuário.</string>
+    <string name="zh_account_local_account_invalid">Um nome de usuário válido suporta apenas letras (maiúsculas e minúsculas), números e sublinhados. O comprimento não pode ser inferior a 2 caracteres ou exceder 16 caracteres.\nExemplos de nomes de usuário corretos: Name, Name_, Name123\nExemplos de nomes de usuário incorretos: Name@, N ame, Name(123)\nNo entanto, se você estiver usando um mod ou plugin relacionado que desativa esse mecanismo, pode continuar usando este nome. Caso contrário, renomeie-o!</string>
     <string name="zh_account_login_local_name">Nome de Usuário</string>
     <string name="zh_account_login_start">Iniciar Login!</string>
     <string name="zh_account_no_microsoft_account">Por favor, faça login com pelo menos uma conta oficial do Minecraft, não incentivamos o lançamento do Minecraft sem uma conta oficial.</string>
@@ -145,6 +145,8 @@
     <string name="zh_controls_info_view">Ver Informações</string>
     <string name="zh_controls_info_no_info">Este layout de controle não possui descrição…</string>
     <string name="zh_controls_info_invalid">Arquivo Inválido:</string>
+    <string name="zh_controls_info_default_title">Layout de Controle Padrão</string>
+    <string name="zh_controls_info_default_desc">Este é o arquivo de layout de controle padrão. Clique para gerenciar este layout.</string>
     <string name="zh_controls_set_default_message">Tem certeza de que deseja definir este layout de controle como o padrão?</string>
     <string name="zh_controls_nothing">Não há nenhum layout de controle aqui, reiniciar o aplicativo gerará um novo layout de controle padrão</string>
     <string name="zh_replacement_customcontrol">Substituir Layout de Controle</string>
@@ -163,7 +165,6 @@
     <string name="zh_custom_background_title">Personalizar Imagem de Fundo do Launcher</string>
     <string name="zh_custom_background_desc">Abra a interface de gerenciamento de ícones de fundo do launcher, você pode adicionar suas imagens de fundo favoritas e definir diferentes fundos para diferentes interfaces</string>
     <string name="zh_custom_background_main_menu">Menu Principal</string>
-    <string name="zh_custom_background_settings">Tela de Configurações</string>
     <string name="zh_custom_background_controls">Layout de Controle</string>
     <string name="zh_custom_background_in_game">In-Game</string>
     <string name="zh_custom_background_dialog_message">Clique no botão \"Selecionar\" para definir esta imagem como fundo de %s</string>
@@ -318,6 +319,7 @@
     <string name="zh_about_version_status_other_branch">Outros Ramos</string>
     <string name="zh_about_version_status_debug">Versão de Teste</string>
     <string name="zh_about_version_status_release">Versão Oficial</string>
+    <string name="zh_about_version_status_pre_release">Pré-lançamento</string>
     <!-- Sponsorship Related -->
     <string name="zh_request_sponsorship_title">Apoie o Meu Desenvolvimento</string>
     <string name="zh_request_sponsorship_message">A maior parte deste software foi desenvolvida e mantida por mim sozinho. Se você acha que este software é útil para você e, se possível, considere patrocinar-me para que eu possa ter mais motivação para continuar desenvolvendo e melhorando, obrigado pelo seu apoio!</string>

@@ -48,6 +48,8 @@
     <string name="zh_profile_mods_modloader">Trình nạp Mod</string>
     <string name="zh_profile_mods_download_mod_failed">Tải tệp Mod thất bại</string>
     <string name="zh_profile_mods_download_mod_release_version">Chỉ hiển thị các phiên bản chính thức của Minecraft</string>
+    <string name="zh_profile_mods_download_mod_custom_name">Tên Tùy Chỉnh</string>
+    <string name="zh_profile_mods_download_mod_custom_name_invalid">Tên chứa ký tự không hợp lệ: \"%s\"</string>
     <string name="zh_profile_mods_search_mod_failed">Tìm kiếm Mod thất bại</string>
     <string name="zh_profile_mods_search_mod_no_result">Không tìm thấy Mod liên quan</string>
     <string name="zh_profile_mods_search_mod">Tìm kiếm Mod</string>
@@ -98,9 +100,7 @@
     <string name="zh_account_local_account">Tài khoản ngoại tuyến</string>
     <string name="zh_account_local_account_empty">Tên người dùng không được để trống!</string>
     <string name="zh_account_local_account_exists">Tên người dùng xung đột với tài khoản hiện có, vui lòng điền một tên mới!</string>
-    <string name="zh_account_local_account_less">Tên người dùng quá ngắn!</string>
-    <string name="zh_account_local_account_greater">Tên người dùng quá dài!</string>
-    <string name="zh_account_local_account_illegal">Tên người dùng chứa ký tự không hợp lệ! Chỉ hỗ trợ chữ cái tiếng Anh (cả viết hoa và viết thường), số và dấu gạch dưới làm tên người dùng</string>
+    <string name="zh_account_local_account_invalid">Tên người dùng hợp lệ chỉ hỗ trợ các chữ cái (chữ hoa và chữ thường), số và dấu gạch dưới. Độ dài phải không được ít hơn 2 ký tự và không được vượt quá 16 ký tự.\nVí dụ tên người dùng đúng: Name, Name_, Name123\nVí dụ tên người dùng sai: Name@, N ame, Name(123)\nTuy nhiên, nếu bạn sử dụng mod hoặc plugin có thể vô hiệu hóa cơ chế này, bạn có thể tiếp tục sử dụng tên này, nếu không hãy đổi tên lại!</string>
     <string name="zh_account_login_local_name">Tên người dùng</string>
     <string name="zh_account_login_start">Bắt đầu đăng nhập!</string>
     <string name="zh_account_no_microsoft_account">Vui lòng đăng nhập ít nhất một tài khoản Minecraft chính hãng, chúng tôi không khuyến khích người dùng khởi động Minecraft mà không có tài khoản chính hãng.</string>
@@ -145,6 +145,8 @@
     <string name="zh_controls_info_view">Xem thông tin</string>
     <string name="zh_controls_info_no_info">Bố cục điều khiển này không có mô tả…</string>
     <string name="zh_controls_info_invalid">Tệp không hợp lệ:</string>
+    <string name="zh_controls_info_default_title">Bố Cục Điều Khiển Mặc Định</string>
+    <string name="zh_controls_info_default_desc">Đây là tệp bố cục điều khiển mặc định. Nhấn để quản lý bố cục này.</string>
     <string name="zh_controls_set_default_message">Bạn có chắc chắn muốn đặt bố cục điều khiển này làm bố cục điều khiển mặc định không?</string>
     <string name="zh_controls_nothing">Không có bố cục điều khiển nào ở đây, khởi động lại ứng dụng sẽ tạo bố cục điều khiển mặc định mới</string>
     <string name="zh_replacement_customcontrol">Thay đổi bố cục điều khiển</string>
@@ -163,7 +165,6 @@
     <string name="zh_custom_background_title">Tùy chỉnh hình nền trình khởi động</string>
     <string name="zh_custom_background_desc">Mở giao diện quản lý hình nền trình khởi động, bạn có thể tự thêm hình nền yêu thích của mình và đặt hình nền khác nhau cho các giao diện khác nhau</string>
     <string name="zh_custom_background_main_menu">Menu chính</string>
-    <string name="zh_custom_background_settings">Màn hình cài đặt</string>
     <string name="zh_custom_background_controls">Bố cục điều khiển</string>
     <string name="zh_custom_background_in_game">Trong trò chơi</string>
     <string name="zh_custom_background_dialog_message">Nhấn nút \"Chọn\" để đặt hình ảnh này làm hình nền cho %s</string>
@@ -318,6 +319,7 @@
     <string name="zh_about_version_status_other_branch">Nhánh khác</string>
     <string name="zh_about_version_status_debug">Phiên bản thử nghiệm</string>
     <string name="zh_about_version_status_release">Phiên bản chính thức</string>
+    <string name="zh_about_version_status_pre_release">Phiên bản phát hành trước</string>
     <!-- Sponsorship Related -->
     <string name="zh_request_sponsorship_title">Hỗ Trợ Phát Triển Của Tôi</string>
     <string name="zh_request_sponsorship_message">Phần lớn phần mềm này được phát triển và duy trì bởi một mình tôi. Nếu bạn thấy phần mềm này hữu ích và có khả năng, hãy xem xét tài trợ cho tôi để tôi có thêm động lực tiếp tục phát triển và cải tiến nó. Cảm ơn bạn đã hỗ trợ!</string>

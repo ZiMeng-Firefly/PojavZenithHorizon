@@ -61,6 +61,7 @@ public class GamepadMapperFragment extends FragmentWithAnim implements
     private RemapperManager mInputManager;
     private GamepadMapperAdapter mMapperAdapter;
     private Gamepad mGamepad;
+
     public GamepadMapperFragment() {
         super(R.layout.fragment_controller_remapper);
     }
@@ -86,6 +87,12 @@ public class GamepadMapperFragment extends FragmentWithAnim implements
         grabStateSpinner.setAdapter(mGrabStateAdapter);
         grabStateSpinner.setSelection(0);
         grabStateSpinner.setOnItemSelectedListener(this);
+        ViewAnimUtils.slideInAnim(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         ViewAnimUtils.slideInAnim(this);
     }
 

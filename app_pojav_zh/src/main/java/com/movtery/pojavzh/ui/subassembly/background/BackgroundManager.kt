@@ -1,34 +1,15 @@
 package com.movtery.pojavzh.ui.subassembly.background
 
-import android.graphics.drawable.Drawable
 import com.movtery.pojavzh.utils.PathAndUrlManager
 import com.movtery.pojavzh.utils.file.FileTools.Companion.mkdirs
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.util.Properties
-import java.util.concurrent.ConcurrentHashMap
 
 class BackgroundManager {
     companion object {
         private val FILE_BACKGROUND_PROPERTIES: File = File(PathAndUrlManager.DIR_GAME_HOME, "background.properties")
-        private val backgroundDrawable: MutableMap<String, Drawable?> = ConcurrentHashMap()
-
-        @JvmStatic
-        fun getBackgroundDrawable(name: String, imageFile: File): Drawable? {
-            val hasDrawable = backgroundDrawable.containsKey(name)
-            if (hasDrawable) {
-                return backgroundDrawable[name]
-            } else {
-                try {
-                    val drawable = Drawable.createFromPath(imageFile.absolutePath)
-                    backgroundDrawable[name] = drawable
-                    return drawable
-                } catch (e: Exception) {
-                    return null
-                }
-            }
-        }
 
         @JvmStatic
         val properties: Properties
@@ -52,7 +33,6 @@ class BackgroundManager {
             get() {
                 val properties = Properties()
                 properties.setProperty(BackgroundType.MAIN_MENU.name, "null")
-                properties.setProperty(BackgroundType.SETTINGS.name, "null")
                 properties.setProperty(BackgroundType.CUSTOM_CONTROLS.name, "null")
                 properties.setProperty(BackgroundType.IN_GAME.name, "null")
 
@@ -79,19 +59,15 @@ class BackgroundManager {
             val properties = Properties()
             properties.setProperty(
                 BackgroundType.MAIN_MENU.name,
-                (if (map[BackgroundType.MAIN_MENU] == null) "null" else map[BackgroundType.MAIN_MENU])
-            )
-            properties.setProperty(
-                BackgroundType.SETTINGS.name,
-                (if (map[BackgroundType.SETTINGS] == null) "null" else map[BackgroundType.SETTINGS])
+                map[BackgroundType.MAIN_MENU] ?: "null"
             )
             properties.setProperty(
                 BackgroundType.CUSTOM_CONTROLS.name,
-                (if (map[BackgroundType.CUSTOM_CONTROLS] == null) "null" else map[BackgroundType.CUSTOM_CONTROLS])
+                map[BackgroundType.CUSTOM_CONTROLS] ?: "null"
             )
             properties.setProperty(
                 BackgroundType.IN_GAME.name,
-                (if (map[BackgroundType.IN_GAME] == null) "null" else map[BackgroundType.IN_GAME])
+                map[BackgroundType.IN_GAME] ?: "null"
             )
 
             saveProperties(properties)

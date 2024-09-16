@@ -3,10 +3,7 @@ package com.movtery.pojavzh.utils;
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.DEFAULT_PREF;
 import static net.kdt.pojavlaunch.prefs.LauncherPreferences.PREF_ANIMATION;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -62,11 +59,10 @@ public class ZHTools {
     }
 
     public synchronized static Drawable customMouse(Context context) {
-        String customMouse = DEFAULT_PREF.getString("custom_mouse", null);
-        if (customMouse == null) {
+        File mouseFile = getCustomMouse();
+        if (mouseFile == null) {
             return ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_mouse_pointer, context.getTheme());
         }
-        File mouseFile = new File(PathAndUrlManager.DIR_CUSTOM_MOUSE, customMouse);
 
         // 鼠标：自定义鼠标图片
         if (mouseFile.exists()) {
@@ -74,6 +70,14 @@ public class ZHTools {
         } else {
             return ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_mouse_pointer, context.getTheme());
         }
+    }
+
+    public static File getCustomMouse() {
+        String customMouse = DEFAULT_PREF.getString("custom_mouse", null);
+        if (customMouse == null) {
+            return null;
+        }
+        return new File(PathAndUrlManager.DIR_CUSTOM_MOUSE, customMouse);
     }
 
     public static void setBackgroundImage(Context context, BackgroundType backgroundType, View backgroundView) {
@@ -84,10 +88,7 @@ public class ZHTools {
             return;
         }
 
-        Drawable drawable = BackgroundManager.getBackgroundDrawable(backgroundImage.getName(), backgroundImage);
-        if (drawable != null) {
-            backgroundView.post(() -> backgroundView.setBackground(drawable));
-        }
+        ImageUtils.loadImageIntoView(context, backgroundView, backgroundImage);
     }
 
     public static File getBackgroundImage(BackgroundType backgroundType) {
@@ -98,18 +99,6 @@ public class ZHTools {
         File backgroundImage = new File(PathAndUrlManager.DIR_BACKGROUND, pngName);
         if (!backgroundImage.exists() || !ImageUtils.isImage(backgroundImage)) return null;
         return backgroundImage;
-    }
-
-    public static void swapSettingsFragment(FragmentActivity fragmentActivity, Class<? extends Fragment> fragmentClass,
-                                            @Nullable String fragmentTag, @Nullable Bundle bundle, boolean addToBackStack) {
-        FragmentTransaction transaction = fragmentActivity.getSupportFragmentManager().beginTransaction();
-
-        if (PREF_ANIMATION) transaction.setCustomAnimations(R.anim.cut_into, R.anim.cut_out, R.anim.cut_into, R.anim.cut_out);
-
-        if (addToBackStack) transaction.addToBackStack(fragmentClass.getName());
-        transaction.setReorderingAllowed(true)
-                .replace(R.id.zh_settings_fragment, fragmentClass, bundle, fragmentTag)
-                .commit();
     }
 
     public static void swapFragmentWithAnim(Fragment fragment, Class<? extends Fragment> fragmentClass,
@@ -139,14 +128,7 @@ public class ZHTools {
                 .commit();
     }
 
-    public static void restartApp(Context context) {
-        Intent intent = context.getPackageManager()
-                .getLaunchIntentForPackage(context.getPackageName());
-        PendingIntent restartIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
-
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC, getCurrentTimeMillis() + 1000, restartIntent);
-
+    public static void killApp() {
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
@@ -193,7 +175,8 @@ public class ZHTools {
                 context.getString(R.string.zh_about_version_status_other_branch);
 
         String status;
-        if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) status = context.getString(R.string.zh_about_version_status_release);
+        if (getVersionName().contains("pre-release")) status = context.getString(R.string.zh_about_version_status_pre_release);
+        else if (Objects.equals(BuildConfig.BUILD_TYPE, "release")) status = context.getString(R.string.zh_about_version_status_release);
         else status = context.getString(R.string.zh_about_version_status_debug);
 
         return "[" + branch + "] " + status;

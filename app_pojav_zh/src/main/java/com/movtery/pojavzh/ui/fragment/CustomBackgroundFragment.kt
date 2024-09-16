@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo.YoYoString
 import com.google.android.material.tabs.TabLayout
+import com.movtery.pojavzh.extra.ZHExtraConstants
 import com.movtery.pojavzh.ui.dialog.FilesDialog
 import com.movtery.pojavzh.ui.dialog.FilesDialog.FilesButton
 import com.movtery.pojavzh.ui.subassembly.background.BackgroundManager.Companion.properties
@@ -32,6 +33,7 @@ import com.movtery.pojavzh.utils.stringutils.StringUtils
 import net.kdt.pojavlaunch.PojavApplication
 import net.kdt.pojavlaunch.R
 import net.kdt.pojavlaunch.Tools
+import net.kdt.pojavlaunch.extra.ExtraCore
 import java.io.File
 
 class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_background) {
@@ -56,12 +58,12 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
         super.onCreate(savedInstanceState)
         openDocumentLauncher = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { result: Uri? ->
             result?.let {
-                Toast.makeText(requireContext(), getString(R.string.tasks_ongoing), Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), getString(R.string.tasks_ongoing), Toast.LENGTH_SHORT).show()
 
                 PojavApplication.sExecutorService.execute {
-                    copyFileInBackground(requireContext(), result, mFileRecyclerView!!.fullPath.absolutePath)
+                    copyFileInBackground(requireActivity(), result, mFileRecyclerView!!.fullPath.absolutePath)
                     Tools.runOnUiThread {
-                        Toast.makeText(requireContext(), getString(R.string.zh_file_added), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireActivity(), getString(R.string.zh_file_added), Toast.LENGTH_SHORT).show()
                         mFileRecyclerView?.listFileAt(backgroundPath())
                     }
                 }
@@ -96,14 +98,15 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
                 filesButton.setMessageText(message)
                 filesButton.setMoreButtonText(getString(R.string.global_select))
 
-                val filesDialog = FilesDialog(requireContext(), filesButton,
+                val filesDialog = FilesDialog(requireActivity(), filesButton,
                     { Tools.runOnUiThread { mFileRecyclerView?.refreshPath() } },
                     backgroundPath(), file)
                 filesDialog.setMoreButtonClick {
                     backgroundMap[backgroundType] = fileName
                     saveProperties(backgroundMap)
+                    refreshMainBackground()
 
-                    Toast.makeText(requireContext(),
+                    Toast.makeText(requireActivity(),
                         StringUtils.insertSpace(getString(R.string.zh_custom_background_selected, currentStatusName), fileName),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -122,11 +125,12 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
             setVisibilityAnim(mNothingTip!!, show)
         }
 
-        mResetButton?.setOnClickListener { v: View? ->
+        mResetButton?.setOnClickListener { _: View? ->
             refreshType(mTabLayout!!.selectedTabPosition)
             backgroundMap[backgroundType] = "null"
             saveProperties(backgroundMap)
-            Toast.makeText(requireContext(), getString(R.string.zh_custom_background_reset, currentStatusName), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), getString(R.string.zh_custom_background_reset, currentStatusName), Toast.LENGTH_SHORT).show()
+            refreshMainBackground()
         }
 
         mReturnButton?.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
@@ -141,10 +145,14 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
         slideInAnim(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        slideInAnim(this)
+    }
+
     private fun initBackgroundMap() {
         val properties = properties
         backgroundMap[BackgroundType.MAIN_MENU] = properties[BackgroundType.MAIN_MENU.name] as String?
-        backgroundMap[BackgroundType.SETTINGS] = properties[BackgroundType.SETTINGS.name] as String?
         backgroundMap[BackgroundType.CUSTOM_CONTROLS] = properties[BackgroundType.CUSTOM_CONTROLS.name] as String?
         backgroundMap[BackgroundType.IN_GAME] = properties[BackgroundType.IN_GAME.name] as String?
     }
@@ -155,10 +163,13 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
         return dirBackground
     }
 
+    private fun refreshMainBackground() {
+        if (backgroundType == BackgroundType.MAIN_MENU) ExtraCore.setValue(ZHExtraConstants.MAIN_BACKGROUND_CHANGE, true)
+    }
+
     private val currentStatusName: String
         get() = when (this.backgroundType) {
             BackgroundType.MAIN_MENU -> getString(R.string.zh_custom_background_main_menu)
-            BackgroundType.SETTINGS -> getString(R.string.zh_custom_background_settings)
             BackgroundType.CUSTOM_CONTROLS -> getString(R.string.zh_custom_background_controls)
             BackgroundType.IN_GAME -> getString(R.string.zh_custom_background_in_game)
             else -> getString(R.string.zh_unknown)
@@ -166,9 +177,8 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
 
     private fun refreshType(index: Int) {
         when (index) {
-            1 -> this.backgroundType = BackgroundType.SETTINGS
-            2 -> this.backgroundType = BackgroundType.CUSTOM_CONTROLS
-            3 -> this.backgroundType = BackgroundType.IN_GAME
+            1 -> this.backgroundType = BackgroundType.CUSTOM_CONTROLS
+            2 -> this.backgroundType = BackgroundType.IN_GAME
             0 -> this.backgroundType = BackgroundType.MAIN_MENU
             else -> this.backgroundType = BackgroundType.MAIN_MENU
         }
@@ -187,13 +197,13 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
 
         mResetButton?.setContentDescription(getString(R.string.cropper_reset))
         mAddFileButton?.setContentDescription(getString(R.string.zh_custom_background_add))
-        mResetButton?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_reset))
+        mResetButton?.setImageDrawable(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_reset))
 
         view.findViewById<View>(R.id.zh_create_folder_button).visibility = View.GONE
         view.findViewById<View>(R.id.zh_search_button).visibility = View.GONE
 
         mFileRecyclerView = view.findViewById(R.id.zh_custom_background)
-        mFileRecyclerView?.setFileIcon(FileIcon.FILE)
+        mFileRecyclerView?.setFileIcon(FileIcon.IMAGE)
 
         ZHTools.setTooltipText(mReturnButton, mReturnButton?.contentDescription)
         ZHTools.setTooltipText(mAddFileButton, mAddFileButton?.contentDescription)
@@ -203,17 +213,14 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
 
     private fun bindTabs() {
         val mainMenu = mTabLayout!!.newTab()
-        val settings = mTabLayout!!.newTab()
         val controls = mTabLayout!!.newTab()
         val inGame = mTabLayout!!.newTab()
 
         mainMenu.setText(resources.getText(R.string.zh_custom_background_main_menu))
-        settings.setText(resources.getText(R.string.zh_custom_background_settings))
         controls.setText(resources.getText(R.string.zh_custom_background_controls))
         inGame.setText(resources.getText(R.string.zh_custom_background_in_game))
 
         mTabLayout?.addTab(mainMenu)
-        mTabLayout?.addTab(settings)
         mTabLayout?.addTab(controls)
         mTabLayout?.addTab(inGame)
 

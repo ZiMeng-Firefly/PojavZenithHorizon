@@ -72,7 +72,7 @@ public class AccountsManager {
         };
 
         mDoneListener = account -> {
-            Toast.makeText(context, R.string.main_login_done, Toast.LENGTH_SHORT).show();
+            Tools.runOnUiThread(() -> Toast.makeText(context, R.string.main_login_done, Toast.LENGTH_SHORT).show());
 
             //检查账号是否已存在
             if (getAllAccount().contains(account)) return;
@@ -100,36 +100,33 @@ public class AccountsManager {
         };
     }
 
-    //强制登录（忽略账号是否未到期）
     public void forcedLogin(MinecraftAccount minecraftAccount) {
-        if (AccountUtils.isNoLoginRequired(minecraftAccount)) return;
-
-        if (AccountUtils.isOtherLoginAccount(minecraftAccount)) {
-            AccountUtils.otherLogin(context, minecraftAccount);
-            return;
-        }
+        if (commonLogin(minecraftAccount)) return;
 
         if (minecraftAccount.isMicrosoft) {
             AccountUtils.microsoftLogin(minecraftAccount);
         }
     }
 
-    //普通登录
     public void performLogin(MinecraftAccount minecraftAccount) {
-        if (AccountUtils.isNoLoginRequired(minecraftAccount)) {
-            return;
-        }
-
-        if (AccountUtils.isOtherLoginAccount(minecraftAccount) && ZHTools.getCurrentTimeMillis() > minecraftAccount.expiresAt) {
-            AccountUtils.otherLogin(context, minecraftAccount);
-            return;
-        }
+        if (commonLogin(minecraftAccount)) return;
 
         if (minecraftAccount.isMicrosoft) {
             if (ZHTools.getCurrentTimeMillis() > minecraftAccount.expiresAt) {
                 AccountUtils.microsoftLogin(minecraftAccount);
             }
         }
+    }
+
+    private boolean commonLogin(MinecraftAccount minecraftAccount) {
+        if (AccountUtils.isNoLoginRequired(minecraftAccount)) return true;
+
+        if (AccountUtils.isOtherLoginAccount(minecraftAccount) && ZHTools.getCurrentTimeMillis() > minecraftAccount.expiresAt) {
+            AccountUtils.otherLogin(context, minecraftAccount);
+            return true;
+        }
+
+        return false;
     }
 
     public void reload() {
